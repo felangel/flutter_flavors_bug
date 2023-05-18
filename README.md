@@ -1,16 +1,59 @@
 # flutter_flavors_bug
 
-A new Flutter project.
+This is a Flutter project created via `flutter create flutter_flavors_bug`.
 
-## Getting Started
+The `android/app/build.gradle` was modified to include productFlavors with two dimensions:
 
-This project is a starting point for a Flutter application.
+```groovy
+flavorDimensions "api","track"
+productFlavors {
+    production {
+        dimension "api"
+    }
+    development {
+        dimension "api"
+    }
+    internal {
+        dimension "track"
+    }
+    external {
+        dimension "track"
+    }
+}
+```
 
-A few resources to get you started if this is your first Flutter project:
+Running `flutter run --flavor development` results in the following error:
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+```
+$ flutter run --flavor development                                     
+Using hardware rendering with device sdk gphone64 arm64. If you notice graphics artifacts, consider enabling software rendering with
+"--enable-software-rendering".
+Launching lib/main.dart on sdk gphone64 arm64 in debug mode...
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Task 'assembleDevelopmentDebug' not found in root project 'android'.
+
+* Try:
+> Run gradlew tasks to get a list of available tasks.
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights.
+
+* Get more help at https://help.gradle.org
+
+BUILD FAILED in 797ms
+Running Gradle task 'assembleDevelopmentDebug'...                1,287ms
+
+┌─ Flutter Fix ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┐
+│ [!]  Gradle project does not define a task suitable for the requested build.                                                          │
+│                                                                                                                                       │
+│ The /Users/felix/Desktop/flutter_flavors_bug/android/app/build.gradle file defines product flavors: development, developmentexternal, │
+│ developmentinternal, production, productionexternal, productioninternal. You must specify a --flavor option to select one of them.    │
+└───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
+Exception: Gradle task assembleDevelopmentDebug failed with exit code 1
+```
+
+The error states that the `build.gradle` file defines product flavors: `development, developmentexternal, developmentinternal, production, productionexternal, productioninternal` which is incorrect since `development` and `production` are not compatible with `flutter run` or `flutter build`.
+
